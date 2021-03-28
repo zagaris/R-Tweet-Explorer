@@ -1,0 +1,264 @@
+---
+title: "R Community Explorer"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(rtweet)
+library(reactable)
+library(lubridate)
+library(DT)
+library(shiny)
+library(echarts4r)
+
+#rmarkdown::render("explorer.Rmd")
+
+weightA <- 0.4
+weightB <- 0.6
+
+# search the latest n tweets with the hashtag rstats
+tweet_df <- search_tweets("#rstats", n = 800, include_rts = FALSE)
+
+# select the properties of the tweets that you need
+tweets <- tweet_df %>%
+  select(user_id, status_id, created_at, screen_name, text, favorite_count, retweet_count) %>%
+  filter(created_at >= as.Date(today("EST")))
+
+weighted_tweets <- tweets
+
+weighted_tweets$weight <- (weightA*weighted_tweets$favorite_count + weightB*weighted_tweets$retweet_count)
+
+
+# count the number of tweets today
+total_tweets <- count(tweets[!duplicated(tweets$text),])
+
+# count the number of tweeters today
+total_tweeters <- count(tweets[!duplicated(tweets$user_id),])
+
+# count the number of likes today
+total_likes <- sum(tweets$favorite_count)
+
+# count the number of retweets today
+total_retweets <- sum(tweets$retweet_count)
+
+reactable::reactable(tweets)
+
+```
+
+# Dashboard {data-icon="fa-globe"}
+
+Row
+-----------------------------------------------------------------------
+
+### Total Tweets Today
+
+```{r}
+valueBox(total_tweets, icon="fa-twitter", color="orange")
+```
+
+### Total Tweeters Today
+
+```{r}
+valueBox(total_tweeters, icon="fa-users", color="green")
+```
+
+### Total Likes Today
+
+```{r}
+valueBox(total_likes, icon="fa-heart", color="plum")
+```
+
+### Total Retweets Today
+
+```{r}
+valueBox(total_retweets, icon="fa-retweet", color="plum")
+```
+
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### **Most Recent Tweet**
+
+```{r}
+
+# get the most recent tweet
+most_recent_tweet <- tweets %>%
+  slice_max(created_at)  %>%
+  slice(1)
+
+recent_tweet_screen_name <- most_recent_tweet$screen_name[1]
+recent_tweet_status_id <- most_recent_tweet$status_id[1]
+recent_tweet_time <- most_recent_tweet$created_at[1]
+recent_tweet_text <- most_recent_tweet$text[1]
+
+# Construct the url for the most recent tweet
+recentTweetURL <- stringr::str_glue("https://twitter.com/{recent_tweet_screen_name}/status/{recent_tweet_status_id}")
+
+# construct the element for the page
+tags$div(
+  tags$b("Author: "),
+  recent_tweet_screen_name,
+  tags$br(),
+  tags$b("Time: "),
+  recent_tweet_time,
+  tags$br(),
+  tags$h3(recent_tweet_text),
+  tags$br(),
+  tags$a(href=recentTweetURL, "tweet")
+)
+
+
+```
+
+### **Tweet of the day**
+
+```{r}
+
+# get most recent tweet
+tweet_of_the_day <- weighted_tweets %>%
+  slice_max(weight)  %>%
+  slice(1)
+
+screen_name <- tweet_of_the_day$screen_name[1]
+status_id <- tweet_of_the_day$status_id[1]
+text <- tweet_of_the_day$text[1]
+
+# Get url from the most recent tweet
+TweetURL <- stringr::str_glue("https://twitter.com/{screen_name}/status/{status_id}")
+
+# construct the element for the page
+
+tags$div(
+  tags$b("Author: "),
+  screen_name,
+  tags$h3(text),
+  tags$br(),
+  tags$a(href=TweetURL, "tweet")
+)
+
+```
+
+### **Most Liked Tweet**
+
+```{r}
+
+# get the tweet with the most likes
+most_liked_tweet <- tweets %>%
+  slice_max(favorite_count)  %>%
+  slice(1)
+
+fv_tweet_screen_name <- most_liked_tweet$screen_name[1]
+fv_tweet_status_id <- most_liked_tweet$status_id[1]
+fv_tweet_likes <- most_liked_tweet$favorite_count[1]
+fv_tweet_text <- most_liked_tweet$text[1]
+
+# Construct the url for the most liked tweet
+fvTweetURL <- stringr::str_glue("https://twitter.com/{fv_tweet_screen_name}/status/{fv_tweet_status_id}")
+
+# construct the element for the page
+tags$div(
+  tags$b("Author: "),
+  fv_tweet_screen_name,
+  tags$br(),
+  tags$b("Likes: "),
+  fv_tweet_likes,
+  tags$br(),
+  tags$h3(fv_tweet_text),
+  tags$br(),
+  tags$a(href=fvTweetURL, "tweet")
+)
+
+```
+
+### **Most RT Tweet**
+
+```{r}
+
+# get the most recent tweet
+most_rt_tweet <- tweets %>%
+  slice_max(retweet_count)  %>%
+  slice(1)
+
+rt_tweet_screen_name <- most_rt_tweet$screen_name[1]
+rt_tweet_status_id <- most_rt_tweet$status_id[1]
+rt_tweet_count <- most_rt_tweet$retweet_count[1]
+rt_tweet_text <- most_rt_tweet$text[1]
+
+# Construct the url for the most retweeted tweet
+rtTweetURL <- stringr::str_glue("https://twitter.com/{rt_tweet_screen_name}/status/{rt_tweet_status_id}")
+
+# construct the element for the page
+tags$div(
+  tags$b("Author: "),
+  rt_tweet_screen_name,
+  tags$br(),
+  tags$b("RTs: "),
+  rt_tweet_count,
+  tags$br(),
+  tags$h3(rt_tweet_text),
+  tags$br(),
+  tags$a(href=rtTweetURL, "tweet")
+)
+
+```
+
+Row 
+-----------------------------------------------------------------------
+
+### **Diagrams**
+
+```{r}
+
+tweet_data <- tweets[!duplicated(tweets$text),] %>%
+  ts_data(by = "hours", trim=0L, tz = "EST")
+
+tweet_data %>%
+  e_charts(time) %>%
+  e_line(n, name = "tweets", smooth = TRUE) %>%
+  e_title("Tweets per hour") %>%
+  e_tooltip()
+
+```
+
+
+
+Row 
+-----------------------------------------------------------------------
+
+```{r}
+
+tweeters_data  <- tweets[!duplicated(tweets$user_id),] %>%
+  ts_data(by = "hours", trim=0L, tz = "EST")
+
+tweeters_data %>%
+  e_charts(time) %>%
+  e_line(n, name = "tweeters", smooth = TRUE) %>%
+  e_title("Tweeters per hour") %>%
+  e_tooltip()
+
+```
+
+
+
+# Explore {data-icon="fa-chart-line"}
+
+```{r}
+datatable(
+  tweets_today,
+  extensions = 'Buttons', 
+  options = list(
+    dom = 'Bfrtip',
+    buttons = c('copy', 'csv')
+  )
+)
+```
+
+
+
+
