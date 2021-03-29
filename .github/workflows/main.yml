@@ -16,7 +16,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
       - name: Install dependencies
         run: |
-          Rscript -e "install.packages(c('flexdashboard','dplyr','rtweet', 'reactable', 'lubridate', 'DT', 'shiny', 'echarts4r'))"
+          Rscript -e "install.packages(c('flexdashboard','dplyr', 'httr', 'rtweet', 'reactable', 'lubridate', 'DT', 'shiny', 'echarts4r'))"
       - name: Update explorer
         run: |
           Rscript -e "rmarkdown::render('./explorer.Rmd')"
