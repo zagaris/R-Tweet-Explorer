@@ -22,8 +22,18 @@ library(echarts4r)
 weightA <- 0.4
 weightB <- 0.6
 
+secrets <- Sys.getenv(c("API_KEY", "API_SECRET_KEY", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET"))
+
+mytoken <- create_token(
+  app = "rtweet_demo1",
+  consumer_key = secrets["API_KEY"],
+  consumer_secret = secrets["API_SECRET_KEY"],
+  access_token = secrets["ACCESS_TOKEN"],
+  access_secret = secrets["ACCESS_TOKEN_SECRET"] 
+)
+
 # search the latest n tweets with the hashtag rstats
-tweet_df <- search_tweets("#rstats", n = 800, include_rts = FALSE)
+tweet_df <- search_tweets("#rstats", n = 800, include_rts = FALSE, token = mytoken)
 
 # select the properties of the tweets that you need
 tweets <- tweet_df %>%
