@@ -21,6 +21,12 @@ jobs:
         run: |
           Rscript -e "install.packages(c('flexdashboard','dplyr', 'httr', 'rtweet', 'reactable', 'lubridate', 'DT', 'shiny', 'echarts4r'))"
       - name: Update explorer
+      - name: Environment data
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
         run: |
           Rscript -e "rmarkdown::render('./explorer.Rmd')"
       - name: Update repository
