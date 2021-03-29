@@ -26,7 +26,6 @@ jobs:
           API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-      - name: Update explorer
         run: |
           Rscript -e "rmarkdown::render('./explorer.Rmd')"
       - name: Update repository
