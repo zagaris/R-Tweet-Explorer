@@ -26,3 +26,7 @@ If you want to have a quick overview of the project and you don't have the crede
 
 (2)
 Make sure the timezone that you are getting the data from the twitter is the same with the timezone that you modify and save them.
+
+---
+
+See the project live [here](https://zagaris.github.io/R-Tweet-Explorer/explorer.html)
