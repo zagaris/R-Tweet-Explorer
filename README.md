@@ -16,8 +16,7 @@ The project contains two pages: #dashboard and #explore.
 #dashboard displays the total number of tweets, tweeters, likes and retweets for the day. Also, it displays the most current tweet, the tweet with the most likes and retweets and the tweet of the day(it's calculated based on the number of likes and retweets).
 Also, it shows two plots: one for the sum of tweets in every hour and one for the sum of tweeters in every hour.
 
-#explore shows![image](https://user-images.githubusercontent.com/33516730/112929042-5ff7fa00-9120-11eb-815b-bb9ed16830ad.png)
- all the daily tweets and information about them(user_id, status_id, created_at,screen_name,text,favourite_count,retweet_count)
+#explore shows all the daily tweets and information about them(user_id, status_id, created_at,screen_name,text,favourite_count,retweet_count)
 users can copy and save the information in a svg file and download it.
 
 
