@@ -35,6 +35,6 @@ jobs:
           git config --local user.name "GitHub Actions"
           git add ./explorer.html
           git add ./data/tweets.csv
-          git commit -am "Update explorer.html" 
+          git commit -am "Update explorer.html and fetch new tweets" 
           git push
 
