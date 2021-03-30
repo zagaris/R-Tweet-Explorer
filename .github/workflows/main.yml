@@ -34,6 +34,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add ./explorer.html
+          git add ./data/tweets.csv
           git commit -am "Update explorer.html" 
           git push
 
