@@ -45,7 +45,8 @@ weighted_tweets <- tweets
 weighted_tweets$weight <- (weightA*weighted_tweets$favorite_count + weightB*weighted_tweets$retweet_count)
 
 # store tweets
-save(tweets, file=paste0("data/",make.names(Sys.time()), ".Rda"))
+# save(tweets, file=paste0("data/",make.names(Sys.time()), ".Rda"))
+write_as_csv(tweets,file_name= "data/tweets.csv)
 
 # count the number of tweets today
 total_tweets <- count(tweets[!duplicated(tweets$text),])
