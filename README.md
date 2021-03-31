@@ -13,7 +13,7 @@ I am using GitHub Action as a continuous integration tool to run and update dail
 
 The project contains two pages: #dashboard and #explore.
 
-#dashboard displays the total number of tweets, tweeters, likes and retweets for the day. Also, it displays the most current tweet, the tweet with the most likes and retweets and the tweet of the day(it's calculated based on the number of likes and retweets).
+#dashboard displays the total number of tweets, tweeters, likes and retweets for the day removing duplicate tweets. Also, it displays the most current tweet, the tweet with the most likes and retweets and the tweet of the day(it's calculated based on the number of likes and retweets).
 Also, it shows two plots: one for the number of tweets per hour and one for the number of tweeters per hour.
 
 #explore shows all the daily tweets and provides information about them(user_id, status_id, created_at,screen_name,text,favourite_count,retweet_count). Moreover, users can copy and save the tweets in a svg file.
